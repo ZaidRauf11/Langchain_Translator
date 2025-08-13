@@ -29,19 +29,20 @@ word_prompt = ChatPromptTemplate.from_messages([
     ("human", "{input}")
 ])
 
-# ✅ Updated extra_prompt for better antonyms
+# ✅ Updated to handle multiple languages for synonyms/antonyms
 extra_prompt = ChatPromptTemplate.from_messages([
-("system",
- """You are a language assistant. Given an English word or sentence:
+    ("system",
+     """You are a multilingual language assistant.
+Given a {input_language} sentence, respond in {output_language}.
 
-1. Give a short definition (3–4 lines).
-2. Identify all important words (especially nouns, adjectives, verbs).
-3. For each word, return its:
+1. Provide a short definition (3–4 lines) **in {output_language}**.
+2. Identify important words (nouns, verbs, adjectives) **in {output_language}**.
+3. For each word, list:
    - Type (Noun/Verb/Adjective)
-   - Synonym(s)
-   - Antonym(s)
+   - Synonyms in {output_language}
+   - Antonyms in {output_language}
 
-Use this exact format:
+Follow this exact format:
 
 Definition:
 - ...
@@ -52,7 +53,7 @@ Type: <Noun/Verb/Adjective>
 Synonyms: [word1, word2]
 Antonyms: [word1, word2]
 
-⚠️ Do not use stars (****), emojis, or symbols. Always include the Word name. Follow the format exactly.
+⚠️ No emojis, stars, or extra symbols. Keep format exact.
 """),
     ("human", "{input}")
 ])
@@ -74,14 +75,11 @@ if "last_translation" not in st.session_state:
 if "edit_mode" not in st.session_state:
     st.session_state.edit_mode = False
 
-# Columns for input and button
-col1, col2 = st.columns([4, 1])  # Wider input, smaller button column
-
+# Input & button
+col1, col2 = st.columns([4, 1])
 with col1:
     input_text = st.text_input("✍️ Enter text in any language:", key="input_text")
-
 with col2:
-    # Align button vertically with input field
     st.markdown("<div style='margin-top: 1.9em;'>", unsafe_allow_html=True)
     translate_button = st.button("🔁 Translate", key="translate_button")
     st.markdown("</div>", unsafe_allow_html=True)
@@ -97,7 +95,7 @@ selected_language = st.selectbox("🌍 Select language to translate to:", langua
 if input_text and selected_language:
     # 🌐 Translation
     response = chain.invoke({
-        "input_language": selected_language,
+        "input_language": "English",  # Assuming input is English
         "output_language": selected_language,
         "input": input_text
     })
@@ -115,16 +113,20 @@ if input_text and selected_language:
     # 📘 Word-by-word
     with st.expander("📘 Word-by-word translation"):
         word_response = word_chain.invoke({
-            "input_language": selected_language,
+            "input_language": "English",
             "output_language": selected_language,
             "input": input_text
         })
         st.write(word_response)
 
-    # 🧠 Definition & Vocabulary
-    extra_response = extra_chain.invoke({"input": input_text})
+    # 🧠 Definition & Vocabulary (NOW in selected_language)
+    extra_response = extra_chain.invoke({
+        "input": input_text,
+        "input_language": "English",
+        "output_language": selected_language
+    })
 
-    # --- Parsing Definition & Vocabulary ---
+    # --- Parsing ---
     definition_part = ""
     vocab_lines = []
 
@@ -132,7 +134,6 @@ if input_text and selected_language:
         definition_part, vocab_section = extra_response.split("Vocabulary:", 1)
         vocab_lines = vocab_section.strip().split("\n")
     else:
-        # fallback parsing
         lines = extra_response.splitlines()
         collecting_vocab = False
         for line in lines:
@@ -147,14 +148,11 @@ if input_text and selected_language:
             else:
                 definition_part += line + "\n"
 
-    # 🧠 Definition Section
+    # 🧠 Definition
     with st.expander("🧠 Definition"):
-        if definition_part.strip():
-            st.markdown(definition_part.strip())
-        else:
-            st.write("No definition found.")
+        st.markdown(definition_part.strip() if definition_part.strip() else "No definition found.")
 
-    # ✅ Synonyms Section
+    # ✅ Synonyms
     synonyms_output = []
     current_word = ""
     for line in vocab_lines:
@@ -163,15 +161,10 @@ if input_text and selected_language:
             current_word = line.replace("Word: ", "").strip()
         elif line.startswith("Synonyms:"):
             synonyms_output.append(f"**{current_word}** → {line}")
-
     with st.expander("✅ Synonyms"):
-        if synonyms_output:
-            for syn in synonyms_output:
-                st.markdown(f"- {syn}")
-        else:
-            st.write("No synonyms found.")
+        st.markdown("\n".join(f"- {syn}" for syn in synonyms_output) if synonyms_output else "No synonyms found.")
 
-    # ❌ Antonyms Section
+    # ❌ Antonyms
     antonyms_output = []
     current_word = ""
     for line in vocab_lines:
@@ -180,13 +173,8 @@ if input_text and selected_language:
             current_word = line.replace("Word: ", "").strip()
         elif line.startswith("Antonyms:"):
             antonyms_output.append(f"**{current_word}** → {line}")
-
     with st.expander("❌ Antonyms"):
-        if antonyms_output:
-            for ant in antonyms_output:
-                st.markdown(f"- {ant}")
-        else:
-            st.write("No antonyms found.")
+        st.markdown("\n".join(f"- {ant}" for ant in antonyms_output) if antonyms_output else "No antonyms found.")
 
 # 📝 Saved Translations
 if st.session_state.last_translation:
@@ -204,7 +192,6 @@ if st.session_state.last_translation:
                 st.session_state.last_translation['output'] = new_translation
                 st.session_state.edit_mode = False
                 st.success("✅ Translation updated!")
-
 
 
 
