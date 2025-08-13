@@ -25,6 +25,11 @@ It allows you to translate text into multiple languages, view word-by-word trans
 
 ---
 
+## 🚀 Live Demo
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://langchaintranslator-bigyxqwdcqebewvshj5owd.streamlit.app/)
+
+---
+
 ### 🛠️ Tech Stack
 
 * **Python 3.10+**
