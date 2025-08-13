@@ -119,7 +119,7 @@ if input_text and selected_language:
         })
         st.write(word_response)
 
-    # 🧠 Definition & Vocabulary (NOW in selected_language)
+    # 🧠 Definition & Vocabulary
     extra_response = extra_chain.invoke({
         "input": input_text,
         "input_language": "English",
@@ -192,6 +192,7 @@ if st.session_state.last_translation:
                 st.session_state.last_translation['output'] = new_translation
                 st.session_state.edit_mode = False
                 st.success("✅ Translation updated!")
+
 
 
 
