@@ -21,7 +21,7 @@ It allows you to translate text into multiple languages, view word-by-word trans
 
 ---
 
-<img width="1438" height="770" alt="image" src="https://github.com/user-attachments/assets/46671fa0-2fdf-4166-b4e8-9f1d5096b9f3" />
+<img width="756" height="580" alt="image" src="https://github.com/user-attachments/assets/db95d131-9136-4ee9-a408-eea5d68fabb4" />
 
 ---
 
