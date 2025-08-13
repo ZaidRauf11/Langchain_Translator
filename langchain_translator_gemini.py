@@ -29,7 +29,7 @@ word_prompt = ChatPromptTemplate.from_messages([
     ("human", "{input}")
 ])
 
-# ✅ Updated to handle multiple languages for synonyms/antonyms
+# Updated to handle multiple languages for synonyms/antonyms
 extra_prompt = ChatPromptTemplate.from_messages([
     ("system",
      """You are a multilingual language assistant.
@@ -192,6 +192,7 @@ if st.session_state.last_translation:
                 st.session_state.last_translation['output'] = new_translation
                 st.session_state.edit_mode = False
                 st.success("✅ Translation updated!")
+
 
 
 
