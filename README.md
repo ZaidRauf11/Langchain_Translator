@@ -21,6 +21,10 @@ It allows you to translate text into multiple languages, view word-by-word trans
 
 ---
 
+<img width="1438" height="770" alt="image" src="https://github.com/user-attachments/assets/46671fa0-2fdf-4166-b4e8-9f1d5096b9f3" />
+
+---
+
 ### 🛠️ Tech Stack
 
 * **Python 3.10+**
@@ -94,6 +98,3 @@ streamlit run langchain_translator_gemini.py
 * Translation quality depends on the model and may vary.
 * The vocabulary breakdown relies on the model's parsing, so format consistency is enforced via custom prompt engineering.
 
----
-
-If you want, I can also write a **diagram** showing the workflow of this translator so the README becomes more visual. That would make it easier for others to understand how the chains interact.
